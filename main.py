@@ -12,7 +12,8 @@ from datetime import datetime
 from config import SYMBOLS, CHECK_INTERVAL_SECONDS, MODE
 from exchanges import init_exchanges
 from arbitrage import find_opportunities
-from notifier import send_opportunity_alert, send_status_message
+from execution import execute_arbitrage_trade
+from notifier import send_opportunity_alert, send_trade_execution_alert, send_status_message
 from telegram_commands import build_command_app, bot_state
 
 logging.basicConfig(
@@ -41,13 +42,10 @@ async def scan_loop():
                     await send_opportunity_alert(opp)
 
                     if MODE == "execution":
-                        # ⚠️ Étape volontairement non implémentée ici.
-                        # L'exécution réelle d'ordres nécessite : gestion du solde
-                        # disponible sur chaque exchange, vérification de liquidité
-                        # suffisante dans le carnet d'ordres (pas seulement le
-                        # meilleur prix), gestion des échecs partiels, et des
-                        # tests approfondis en mode simulation avant tout capital réel.
-                        logger.info("Mode exécution activé mais non implémenté — à construire étape par étape.")
+                        logger.info(f"Mode exécution activé. Lancement du trade d'arbitrage pour {opp['symbol']}...")
+                        trade_res = execute_arbitrage_trade(opp, exchange_instances)
+                        logger.info(f"Résultat trade : {trade_res}")
+                        await send_trade_execution_alert(trade_res)
 
             except Exception as e:
                 logger.error(f"Erreur dans la boucle de scan: {e}")
