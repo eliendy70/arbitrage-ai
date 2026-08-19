@@ -30,6 +30,30 @@ async def send_opportunity_alert(opp: dict):
         logger.error(f"Erreur envoi Telegram: {e}")
 
 
+async def send_trade_execution_alert(trade_details: dict):
+    """Formate et envoie une alerte pour un trade exécuté."""
+    mode_str = "Simulation (Paper Trading)" if trade_details.get("paper_trading") else "Réel"
+    status_emoji = "✅" if trade_details.get("status") == "success" else "❌"
+
+    message = (
+        f"{status_emoji} *Trade d'arbitrage exécuté*\n\n"
+        f"Mode : `{mode_str}`\n"
+        f"Paire : `{trade_details.get('symbol')}`\n"
+        f"Achat : *{trade_details.get('buy_exchange')}* à `{trade_details.get('buy_price')}`\n"
+        f"Vente : *{trade_details.get('sell_exchange')}* à `{trade_details.get('sell_price')}`\n"
+        f"Montant : `{trade_details.get('amount_usdt')} USDT` (`{trade_details.get('crypto_amount'):.6f}`)\n"
+        f"Profit net estimé : `{trade_details.get('net_profit_usdt')} USDT`"
+    )
+    try:
+        await bot.send_message(
+            chat_id=TELEGRAM_CHAT_ID,
+            text=message,
+            parse_mode=ParseMode.MARKDOWN,
+        )
+    except Exception as e:
+        logger.error(f"Erreur envoi Telegram: {e}")
+
+
 async def send_status_message(text: str):
     """Envoie un message de statut générique (démarrage, erreurs, etc.)."""
     try:

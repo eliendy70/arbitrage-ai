@@ -38,6 +38,10 @@ MIN_SPREAD_PERCENT = 0.5     # seuil minimum pour considérer une opportunité (
 TAKER_FEE_ESTIMATE = 0.1     # frais moyen par exchange (%), utilisé pour le calcul net
 CHECK_INTERVAL_SECONDS = 10  # fréquence de scan
 
+# --- Paramètres de trade / exécution ---
+TRADE_AMOUNT_USDT = float(os.getenv("TRADE_AMOUNT_USDT", "50.0"))
+PAPER_TRADING = os.getenv("PAPER_TRADING", "true").lower() in ("true", "1", "yes")
+
 # --- Mode ---
 # "detection" = alertes uniquement (recommandé pour commencer)
 # "execution" = exécute réellement les ordres (nécessite tests approfondis)
